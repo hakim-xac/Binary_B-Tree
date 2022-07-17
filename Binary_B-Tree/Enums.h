@@ -4,7 +4,7 @@ namespace KHAS {
 
     // тип дерева
     enum class TypeTree {
-        AVL, ISDP
+        AVL, DBD
     };
 
     // используемые команды в программе
@@ -13,6 +13,14 @@ namespace KHAS {
         , Exit
         , ErrorCommands
         , Print	
+    };
+
+    // Тип поворотов в АВЛ дереве
+    enum class RotationTree {
+        Left
+        , Right
+        , LeftRight
+        , RightLeft
     };
 
 }

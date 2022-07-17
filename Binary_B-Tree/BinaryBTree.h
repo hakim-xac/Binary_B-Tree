@@ -52,12 +52,20 @@ namespace KHAS {
         bool fillVector(int size)                                      ;
 
         // добавляет ключ в дерево
-        void insert(int key, Node** root)                            ;
+        void insert(int key, Node** root)                              ;
+
+        void rotation(Node* root, RotationTree rt)                     ;
+
+        void rotationLLRR(Node* root, RotationTree rt)                 ;
+
+        void rotationLR(Node* root)                                    ;
+
+        void rotationRL(Node* root)                                    ;
 
     public:
 
         // удаляем не нужные конструкторы и операторы
-        BinaryBTree() =                               delete;
+        BinaryBTree() =                                   delete;
         BinaryBTree(const BinaryBTree& bt) =              delete;
         BinaryBTree(BinaryBTree&& bt) =                   delete;
         BinaryBTree& operator =(const BinaryBTree& bt) =  delete;

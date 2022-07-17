@@ -159,6 +159,85 @@ namespace KHAS {
         if (*root == nullptr) *root = new (std::nothrow) Node(key);
     }
 
+    void BinaryBTree::rotation(Node* root, RotationTree rt)
+    {
+        if (rt == RotationTree::LeftRight) rotationLR(root);
+        else if (rt == RotationTree::RightLeft) rotationRL(root);
+        else rotationLLRR(root, rt);
+    }
+
+    void BinaryBTree::rotationLLRR(Node* root, RotationTree rt)
+    {
+        if (!root) return;
+
+        Node* node{ nullptr };
+        Node* left{ nullptr };
+        Node* right{ nullptr };
+
+        if (rt == RotationTree::Left) {
+            left = root->left;
+            right = node->right;
+        }
+        else if (rt == RotationTree::Right) {
+            left = root->right;
+            right = node->left;
+        }
+        else {
+            return;
+        }
+
+        node = left;
+        root->balance = 0;
+        left = right;
+
+        right = root;
+        root = node;
+
+    }
+
+    void BinaryBTree::rotationLR(Node* root)
+    {
+        if (!root) return;
+
+        Node* node{ root->left };
+        Node* node2{ node->right };
+
+        if (!node || !node2) return;
+
+        root->balance = (node2->balance < 0 ? 1 : 0);
+        node->balance = (node2->balance > 0 ? node->balance - 1 : 0);
+        node2->balance = 0;
+
+        root->left = node2->right;
+        node->right = node2->left;
+        node2->left = node;
+        node2->right = root;
+        root = node2;
+    }
+
+    void BinaryBTree::rotationRL(Node* root)
+    {
+        if (!root) return;
+
+        Node* node{ root->right };
+        Node* node2{ node->left };
+
+        if (!node || !node2) return;
+
+        node->balance = (node2->balance < 0 ? node->balance + 1 : 0);
+        root->balance = (node2->balance > 0 ? root->balance - 1 : 0);
+
+        node2->balance = 0;
+
+        root->right = node2->left;
+        node->left = node2->right;
+
+        node2->left = root;
+        node2->right = node;
+        root = node2;
+
+    }
+
     BinaryBTree::BinaryBTree(int size)
         : vec_buffer_()
         , root_(nullptr)
@@ -183,7 +262,7 @@ namespace KHAS {
     BinaryBTree::BinaryBTree(BinaryBTree* bt)
         : vec_buffer_()
         , root_(nullptr)
-        , typeTree_(TypeTree::ISDP) {
+        , typeTree_(TypeTree::DBD) {
 
         if (bt == this) return;
 

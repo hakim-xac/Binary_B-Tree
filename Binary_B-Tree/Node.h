@@ -15,11 +15,15 @@ namespace KHAS {
         // данные
         int data{};
 
+        // уровень баланса
+        int balance{};
 
-        Node(int value, int level = 0)
+
+        Node(int value, int balance = 0)
             : left(nullptr)
             , right(nullptr)
-            , data(value) {}
+            , data(value)
+            , balance(balance) {}
 
         Node() = delete;
     };
