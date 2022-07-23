@@ -31,7 +31,7 @@ namespace KHAS {
         static int sizeTree(const Node* const root)                    ;
 
         // высчитывает высоту дерева
-        static int heightTree(const Node* const root)                  ;
+        static int getHeightTree(const Node* const root)               ;
 
         // высчитывает среднюю высоту дерева
         static int middleHeightTree(const Node* const root, int level) ;
@@ -45,23 +45,16 @@ namespace KHAS {
         // создает ј¬Ћ дерево поиска
         bool toAVL()                                                   ;
 
-        // создает идеальное сбалансированное дерево поиска
-        Node* toISDP(int left, int right)                              ;
-
         // заполн€ет массив случайными значени€ми
         bool fillVector(int size)                                      ;
 
-        // добавл€ет ключ в дерево
-        void insert(int key, Node** root)                              ;
-
-        void rotation(Node* root, RotationTree rt)                     ;
-
-        void rotationLLRR(Node* root, RotationTree rt)                 ;
-
-        void rotationLR(Node* root)                                    ;
-
-        void rotationRL(Node* root)                                    ;
-
+        static int getHeight(const Node* const root)                   ;
+        static Node* rotateLeft(Node* root)                            ;
+        static Node* rotateRight(Node* root)                           ;
+        static void fixNodeHeight(Node* root)                          ;
+        static int getBalanceFactor(Node* root)                        ;
+        static Node* balanceTree(Node* root)                           ;
+        static Node* insertToAVL(int key, Node* root)                  ;
     public:
 
         // удал€ем не нужные конструкторы и операторы
@@ -85,7 +78,7 @@ namespace KHAS {
         std::stringstream print()	    const;
 
         // возвращает высоту дерева
-        int height()		            const;
+        int getHeight()		            const;
 
         // возвращает среднюю высоту дерева
         int middleHeight()	            const;
@@ -98,6 +91,8 @@ namespace KHAS {
 
         // безопасно удал€ет дерево
         void deleteTree()                    ;
+        // высчитывает высоту дерева
+        int getHeightTree()             const;
 
 
     };

@@ -178,7 +178,7 @@ namespace KHAS {
 
         push(delimiter('='));
         push(bufferItem("Высота дерева:"s
-            , std::to_string(tree->height())));
+            , std::to_string(tree->getHeightTree())));
         push(delimiter('='));
     }
 

@@ -3,6 +3,7 @@
 #include <iterator>
 #include <algorithm>
 #include <random>
+#include <cassert>
 
 
 namespace KHAS {
@@ -20,9 +21,9 @@ namespace KHAS {
     {
         if (!root) return std::stringstream{};
         std::stringstream ss;
-        ss << readTree(root->left).str();
+        if(root->left) ss << readTree(root->left).str();
         ss << root->data << " ";
-        ss << readTree(root->right).str();
+        if (root->right) ss << readTree(root->right).str();
         return ss;
     }
 
@@ -34,17 +35,19 @@ namespace KHAS {
         return 1 + sizeTree(root->left) + sizeTree(root->right);
     }
 
-    int BinaryBTree::heightTree(const Node* const root)
+    int BinaryBTree::getHeightTree() const
+    {
+        return getHeightTree(root_);
+    }
+
+    int BinaryBTree::getHeightTree(const Node* const root)
     {
         // если Node == nullptr то возвращаем 0
         if (!root) return 0;
-        // определяем высоту левого дерева
-        int left_height{ heightTree(root->left) };
-        // определяем высоту правого дерева
-        int right_height{ heightTree(root->right) };
+        int left_height{ getHeightTree(root->left) };
+        int right_height{ getHeightTree(root->right) };
 
-        // возвращаем большую высоту из левого и правого дерева и добавляем текущую, т.е. +1
-        return (left_height > right_height ? left_height : right_height) + 1;		
+        return (left_height > right_height ? left_height : right_height) + 1;
     }
 
     int BinaryBTree::middleHeightTree(const Node* const root, int level)
@@ -88,48 +91,16 @@ namespace KHAS {
         if (vec_buffer_.size() == 0) return false;
 
         for (auto&& it: vec_buffer_) {
-            insert(it, &root_);            
+            root_ = insertToAVL(it, root_);            
         }
         return true;
-    }
-
-
-    Node* BinaryBTree::toISDP(int left, int right)
-    {
-        // принимаем границы в массиве
-
-        // если левая граница больше, то это не правильно, возвращаем nullptr
-        if (left > right) return nullptr;
-
-        int size{ static_cast<int>(vec_buffer_.size()) };
-
-        if (size == 0) return nullptr;
-
-        // если правая граница больше размера массива, или меньше 0, то возврат nullptr
-        if (right >= size || left < 0) return nullptr;
-
-        int middle{ left + ((right - left) / 2) };
-
-        // Создаем Node с данными из ячейки массива со смещением "middle".
-        Node* nd{ new (std::nothrow) Node(vec_buffer_[middle]) };
-
-        // если Node не создался, то возврат nullptr
-        if (!nd) return nullptr;
-
-        // теперь создаем левую и правую Node
-        nd->left = toISDP(left, middle - 1);
-        nd->right = toISDP(middle + 1, right);
-
-        // возвращаем указатель на созданную Node
-        return nd;
-
     }
 
     bool BinaryBTree::fillVector(int size)
     {
         std::random_device rd;
         std::mt19937 gen(rd());
-        std::uniform_int_distribution dist(-10000, 10000);
+        std::uniform_int_distribution dist(-9999, 9999);
         
 
 
@@ -149,93 +120,77 @@ namespace KHAS {
         return true;
     }
 
-    void BinaryBTree::insert(int key, Node** root)
+    int BinaryBTree::getHeight(const Node* const root)
     {
-        while (*root) {
-            if (key < (*root)->data) root = &(*root)->left;
-            else if (key > (*root)->data) root = &(*root)->right;
-            else return;
-        }
-        if (*root == nullptr) *root = new (std::nothrow) Node(key);
+        if (!root) return 0;
+        return root->height;
     }
 
-    void BinaryBTree::rotation(Node* root, RotationTree rt)
+    Node* BinaryBTree::rotateLeft(Node* root)
     {
-        if (rt == RotationTree::LeftRight) rotationLR(root);
-        else if (rt == RotationTree::RightLeft) rotationRL(root);
-        else rotationLLRR(root, rt);
-    }
-
-    void BinaryBTree::rotationLLRR(Node* root, RotationTree rt)
-    {
-        if (!root) return;
-
-        Node* node{ nullptr };
-        Node* left{ nullptr };
-        Node* right{ nullptr };
-
-        if (rt == RotationTree::Left) {
-            left = root->left;
-            right = node->right;
-        }
-        else if (rt == RotationTree::Right) {
-            left = root->right;
-            right = node->left;
-        }
-        else {
-            return;
-        }
-
-        node = left;
-        root->balance = 0;
-        left = right;
-
-        right = root;
-        root = node;
-
-    }
-
-    void BinaryBTree::rotationLR(Node* root)
-    {
-        if (!root) return;
-
-        Node* node{ root->left };
-        Node* node2{ node->right };
-
-        if (!node || !node2) return;
-
-        root->balance = (node2->balance < 0 ? 1 : 0);
-        node->balance = (node2->balance > 0 ? node->balance - 1 : 0);
-        node2->balance = 0;
-
-        root->left = node2->right;
-        node->right = node2->left;
-        node2->left = node;
-        node2->right = root;
-        root = node2;
-    }
-
-    void BinaryBTree::rotationRL(Node* root)
-    {
-        if (!root) return;
-
+        assert(root);
         Node* node{ root->right };
-        Node* node2{ node->left };
+        assert(node);
+        root->right = node->left;
+        node->left = root;
+        fixNodeHeight(root);
+        fixNodeHeight(node);
+        return node;
+    }
 
-        if (!node || !node2) return;
+    Node* BinaryBTree::rotateRight(Node* root)
+    {
+        assert(root);
+        Node* node{ root->left };
+        assert(node);
+        root->left = node->right;
+        node->right = root;
+        fixNodeHeight(root);
+        fixNodeHeight(node);
+        return node;
+    }
 
-        node->balance = (node2->balance < 0 ? node->balance + 1 : 0);
-        root->balance = (node2->balance > 0 ? root->balance - 1 : 0);
+    void BinaryBTree::fixNodeHeight(Node* root)
+    {
+        assert(root);
+        auto height_left{ getHeight(root->left) };
+        auto height_right{ getHeight(root->right) };
+        root->height = (height_left > height_right ? height_left : height_right) + 1;
+    }
 
-        node2->balance = 0;
+    int BinaryBTree::getBalanceFactor(Node* root)
+    {
+        assert(root);
+        return getHeight(root->right) - getHeight(root->left);
+    }
 
-        root->right = node2->left;
-        node->left = node2->right;
+    Node* BinaryBTree::balanceTree(Node* root)
+    {
+        assert(root);
+        fixNodeHeight(root);
 
-        node2->left = root;
-        node2->right = node;
-        root = node2;
+        if (getBalanceFactor(root) == 2) {
+            if (getBalanceFactor(root->right) < 0)
+                root->right = rotateRight(root->right);
+            return rotateLeft(root);
+        }
+        else if (getBalanceFactor(root) == -2) {
+            if (getBalanceFactor(root->left) > 0) 
+                root->left = rotateLeft(root->left);
+            return rotateRight(root);
+        }
+        return root;
+    }
 
+    Node* BinaryBTree::insertToAVL(int key, Node* root)
+    {
+        if (root == nullptr) {
+            return new (std::nothrow) Node(key);           
+        }
+        if (key < root->data)   root->left = insertToAVL(key, root->left);
+        else                    root->right = insertToAVL(key, root->right);
+
+        return balanceTree(root);
     }
 
     BinaryBTree::BinaryBTree(int size)
@@ -268,7 +223,7 @@ namespace KHAS {
 
         vec_buffer_ = bt->vec_buffer_;
 
-        root_ = toISDP(0, static_cast<int>(vec_buffer_.size() - 1));
+        //root_ = toISDP(0, static_cast<int>(vec_buffer_.size() - 1));
     }
 
     BinaryBTree::~BinaryBTree()
@@ -286,18 +241,21 @@ namespace KHAS {
         return readTree(root_);
     }
 
-    int BinaryBTree::height() const
+    int BinaryBTree::getHeight() const
     {
-        return heightTree(root_);
+        if (!root_) return 0;
+        return getHeightTree(root_);
     }
 
     int BinaryBTree::middleHeight() const
     {
+        if (!root_) return 0;
         return middleHeightTree(root_, 1) / sizeTree(root_);
     }
 
     long long BinaryBTree::hash() const
     {
+        if (!root_) return 0;
         return hashTree(root_);
     }
 
