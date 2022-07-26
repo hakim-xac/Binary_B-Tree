@@ -45,37 +45,37 @@ namespace KHAS {
         /// считывает дерево и добовляет данные в буфер
         /// </summary>
         template <typename BTree, typename = isBinaryTree_t<BTree>>
-        static void readTree(const BTree* const tree);
+        static void showReadTree(const BTree* const tree);
 
         /// <summary>
         /// считает хеш-сумму и выводит в буфер
         /// </summary>
         template <typename BTree, typename = isBinaryTree_t<BTree>>
-        static void hashTree(const BTree* const tree);
+        static void showHashTree(const BTree* const tree);
 
         /// <summary>
         /// считает высоту дерева и выводит в буфер
         /// </summary>
         template <typename BTree, typename = isBinaryTree_t<BTree>>
-        static void heightTree(const BTree* const tree);
+        static void showHeightTree(const BTree* const tree);
 
         /// <summary>
         /// считает размер дерева
         /// </summary>
         template <typename BTree, typename = isBinaryTree_t<BTree>>
-        static void sizeTree(const BTree* const tree);
+        static void showSizeTree(const BTree* const tree);
 
         /// <summary>
-        /// считает среднюю высоту дерева
+        /// выводит среднюю высоту дерева
         /// </summary>
         template <typename BTree, typename = isBinaryTree_t<BTree>>
-        static void middleHeightTree(const BTree* const tree);
+        static void showMiddleHeightTree(const BTree* const tree);
 
         /// <summary>
-        /// определяет, является двоичное дерево, деревом поиска
+        /// выводит высоту как количество уровней
         /// </summary>
         template <typename BTree, typename = isBinaryTree_t<BTree>>
-        static void searchTree(const BTree* const tree);
+        static void showHeightAsNumberOfLevels(const BTree* const tree);
 
         /// <summary>
         /// выбирает дерево по индексу
@@ -105,10 +105,10 @@ namespace KHAS {
 
 
     public:
-        TaskExecution()          ;
-        ~TaskExecution()         ;
+        TaskExecution();
+        ~TaskExecution();
         void showMenu() const override;
-        
+
     };
 
 
@@ -122,18 +122,18 @@ namespace KHAS {
         push(bufferItem("Данные о дереве"s));
         push(delimiter('-'));
 
-        readTree(tree);
-        sizeTree(tree);
-        hashTree(tree);
-        heightTree(tree);
-        middleHeightTree(tree);
-        searchTree(tree);
+        showReadTree(tree);
+        showSizeTree(tree);
+        showHashTree(tree);
+        showHeightTree(tree);
+        showMiddleHeightTree(tree);
+        showHeightAsNumberOfLevels(tree);
         showStatusBar();
-        
+
     }
 
     template<typename BTree, typename T2>
-    inline void TaskExecution::readTree(const BTree* const tree)
+    inline void TaskExecution::showReadTree(const BTree* const tree)
     {
         using namespace std::literals;
 
@@ -160,7 +160,7 @@ namespace KHAS {
 
     template <typename BTree, typename T2>
     void TaskExecution
-        ::hashTree(const BTree* const tree) {
+        ::showHashTree(const BTree* const tree) {
 
         using namespace std::literals;
 
@@ -172,7 +172,7 @@ namespace KHAS {
 
     template <typename BTree, typename T2>
     void TaskExecution
-        ::heightTree(const BTree* const tree) {
+        ::showHeightTree(const BTree* const tree) {
 
         using namespace std::literals;
 
@@ -184,38 +184,44 @@ namespace KHAS {
 
     template <typename BTree, typename T2>
     void TaskExecution
-        ::sizeTree(const BTree* const tree) {
+        ::showSizeTree(const BTree* const tree) {
 
         using namespace std::literals;
 
         push(delimiter('='));
         push(bufferItem("Размер дерева:"s
-            , std::to_string(tree->size())));
+            , std::to_string(tree->getSize())));
         push(delimiter('='));
     }
 
     template <typename BTree, typename T2>
     void TaskExecution
-        ::middleHeightTree(const BTree* const tree) {
+        ::showMiddleHeightTree(const BTree* const tree) {
 
         using namespace std::literals;
 
         push(delimiter('='));
         push(bufferItem("Средняя высота дерева:"s
-            , std::to_string(tree->middleHeight())));
+            , std::to_string(tree->getMiddleHeight())));
         push(delimiter('='));
     }
 
     template <typename BTree, typename T2>
     void TaskExecution
-        ::searchTree(const BTree* const tree) {
+        ::showHeightAsNumberOfLevels(const BTree* const tree) {
 
-        using namespace std::literals;
+        if (tree->getTypeTree() == TypeTree::DBD) {
 
-        push(delimiter('='));
-        push(bufferItem("Является двоичное дерево, деревом поиска :"s
-            , tree->isSearch() ? "ДА"s : "НЕТ"s ));
-        push(delimiter('='));
+            using namespace std::literals;
+
+            push(delimiter('='));
+            push(bufferItem("Высота дерева, как количество уровней:"s
+                , std::to_string(tree->getHeightTreeNumberOfLevels())));
+            push(delimiter('='));
+            push(bufferItem("Средняя высота дерева, как количество уровней:"s
+                , std::to_string(tree->getMiddleHeightTreeNumberOfLevels())));
+            push(delimiter('='));
+        }
     }
 
 

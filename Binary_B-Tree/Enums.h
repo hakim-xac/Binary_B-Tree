@@ -12,7 +12,7 @@ namespace KHAS {
         NoCommand
         , Exit
         , ErrorCommands
-        , Print	
+        , Print
     };
 
     // Тип поворотов в АВЛ дереве
@@ -21,6 +21,11 @@ namespace KHAS {
         , Right
         , LeftRight
         , RightLeft
+    };
+
+    enum class InsertTypeInBTree {
+        Begin
+        , Next
     };
 
 }

@@ -3,19 +3,19 @@
 namespace KHAS {
     std::pair<BinaryBTree*, BinaryBTree*> TaskExecution::create(int count_tree)
     {
-                
+
         BinaryBTree* avl_tree{ new (std::nothrow) BinaryBTree(count_tree) };
 
         if (!avl_tree) return { nullptr, nullptr };
 
-        BinaryBTree* isdp_tree{ new (std::nothrow) BinaryBTree(avl_tree) };
+        BinaryBTree* dbd_tree{ new (std::nothrow) BinaryBTree(avl_tree) };
 
-        if (!isdp_tree) {
+        if (!dbd_tree) {
             avl_tree->deleteTree();
             return { nullptr, nullptr };
         }
 
-        return { avl_tree, isdp_tree };
+        return { avl_tree, dbd_tree };
     }
 
     bool TaskExecution::checkIsTree()
@@ -108,12 +108,12 @@ namespace KHAS {
 
     TaskExecution
         ::TaskExecution()
-    : Interface()
-    , avlTree100_(nullptr), avlTree200_(nullptr)
-    , avlTree300_(nullptr), avlTree400_(nullptr)
-    , avlTree500_(nullptr), dbdTree100_(nullptr)
-    , dbdTree200_(nullptr), dbdTree300_(nullptr)
-    , dbdTree400_(nullptr), dbdTree500_(nullptr) {
+        : Interface()
+        , avlTree100_(nullptr), avlTree200_(nullptr)
+        , avlTree300_(nullptr), avlTree400_(nullptr)
+        , avlTree500_(nullptr), dbdTree100_(nullptr)
+        , dbdTree200_(nullptr), dbdTree300_(nullptr)
+        , dbdTree400_(nullptr), dbdTree500_(nullptr) {
 
         // создает необходимые деревья
         std::tie(avlTree100_, dbdTree100_) = create(100);
@@ -140,8 +140,8 @@ namespace KHAS {
 
         delete avlTree100_;     delete dbdTree100_;
         delete avlTree200_;     delete dbdTree200_;
-        delete avlTree300_;     delete dbdTree300_;        
-        delete avlTree400_;     delete dbdTree400_;    
+        delete avlTree300_;     delete dbdTree300_;
+        delete avlTree400_;     delete dbdTree400_;
         delete avlTree500_;     delete dbdTree500_;
 
         avlTree100_ = nullptr;  dbdTree100_ = nullptr;

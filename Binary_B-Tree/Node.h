@@ -19,13 +19,14 @@ namespace KHAS {
         int height{};
 
 
+        Node() = delete;
+
         Node(int value, int height = 1)
             : left(nullptr)
             , right(nullptr)
             , data(value)
             , height(height) {}
 
-        Node() = delete;
     };
 
 }
